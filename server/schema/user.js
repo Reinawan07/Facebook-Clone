@@ -1,11 +1,13 @@
-const users = [
-    {
-        name: "admin",
-        username: "admin",
-        email: "admin",
-        password: "admin"
-    }
-]
+const User = require("../models/User");
+
+// const users = [
+//     {
+//         name: "admin",
+//         username: "admin",
+//         email: "admin",
+//         password: "admin"
+//     }
+// ]
 
 const typeDefs = `#graphql
  
@@ -25,7 +27,10 @@ const typeDefs = `#graphql
 const resolvers = {
 
   Query: {
-    users: () => users
+    users: async () => {
+      const users = await User.getAll()
+      return users
+    }
   }
 }
 
