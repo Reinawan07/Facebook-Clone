@@ -1,6 +1,7 @@
 const { GraphQLError } = require('graphql');
-const { hashPassword } = require("../helpers/bcrypt");
+const { hashPassword, comparePassword } = require("../helpers/bcrypt");
 const User = require("../models/User");
+const { signToken } = require('../helpers/jwt');
 
 // const users = [
 //     {
@@ -20,8 +21,13 @@ const typeDefs = `#graphql
     password: String!
   }
 
+  type Token {
+    access_token: String!
+  }
+
   type Mutation {
     register(user: UserInput!): User
+    login(email: String!, password: String!): Token
   }
 
   input UserInput {
@@ -86,7 +92,29 @@ const resolvers = {
         throw error;
       }
     },
-  },
+
+    login: async (_, args) => {
+      try {
+        const { email, password } = args;
+        const user = await User.getUserToAdd(email);
+
+        if (!user || !comparePassword(password, user.password)) {
+          throw new GraphQLError('Invalid email/password', {
+            extensions: { code: '401 Unauthenticated' },
+          });
+        }
+
+        return {
+          access_token: signToken({
+            id: user._id,
+            email: user.email,
+          }),
+        };
+      } catch (error) {
+        throw error;
+      }
+    },
+  }
 };
 
 module.exports = { typeDefs, resolvers };
