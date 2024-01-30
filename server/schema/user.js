@@ -42,6 +42,7 @@ const typeDefs = `#graphql
   type Query {
     users: [User]
     userById(id: ID!): User
+    searchUsers(query: String!): [User]
   }
 `;
 
@@ -56,6 +57,15 @@ const resolvers = {
       try {
         const user = await User.getUserById(id);
         return user;
+      } catch (error) {
+        throw error;
+      }
+    },
+    
+    searchUsers: async (_, { query }) => {
+      try {
+        const users = await User.searchUsers(query);
+        return users;
       } catch (error) {
         throw error;
       }

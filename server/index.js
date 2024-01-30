@@ -4,18 +4,27 @@ const { startStandaloneServer } = require('@apollo/server/standalone');
 
 const { typeDefs: userTypeDefs, resolvers: userResolvers } = require('./schema/user');
 const { typeDefs: postTypeDefs, resolvers: postResolvers } = require('./schema/post');
-// const { connect } = require('./config/mongodb');
+const authentication = require('./middleware/authentication');
+const { connect } = require('./config/mongodb');
 
 const server = new ApolloServer({
   typeDefs: [userTypeDefs, postTypeDefs],
   resolvers: [userResolvers, postResolvers],
 })
 
-startStandaloneServer(server, {
-  listen: { port: 3000 },
-}).then(({ url }) => {
-  // connect()
-  console.log(`🚀  Server ready at: ${url}`);
-})
+connect()
+  .then(() => {
+    return startStandaloneServer(server, {
+      listen: { port: process.env.PORT || 3000 },
+      context: async ({ req }) => {
+        return {
+          authentication: () => authentication(req),
+        };
+      },
+    });
+  })
+  .then(({ url }) => {
+    console.log(`🚀  Server ready at: ${url}`);
+  });
 
 

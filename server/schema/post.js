@@ -92,16 +92,28 @@ scalar Date
 
   type Query {
     posts: [Post]
+    postsById(id: ID!): Post
   }
 `;
 
 const resolvers = {
-
+  // (parent, args, contextValue, info)
   Query: {
-    posts: async () => {
+
+    posts: async (parent, args, contextValue) => {
+      await contextValue.authentication();
       const posts = await Post.getPostAll()
       return posts
-    }
+    },
+
+    postsById: async (_, { id }) => {
+      try {
+        const post = await Post.getPostrById(id);
+        return post;
+      } catch (error) {
+        throw error;
+      }
+    },
   }
 }
 

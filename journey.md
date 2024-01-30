@@ -30,8 +30,8 @@ Buatlah fungsi/method pada aplikasi server GraphQL kamu yang menghubungkan denga
 - [ ] Follow User: untuk kebutuhan memfollow user
 - [x] Get User by Id: untuk menampilkan profile user
 - [ ] Add Post: untuk menambahkan post baru
-- [ ] Get Posts: mengambil daftar post berdasarkan yang terbaru
-- [ ] Get Post by Id: mengambil post berdasarkan id
+- [x] Get Posts: mengambil daftar post berdasarkan yang terbaru
+- [x] Get Post by Id: mengambil post berdasarkan id
 - [ ] Comment Post: untuk menambahkan komentar pada post
 - [ ] Like Post: untuk menambahkan like pada post
 
