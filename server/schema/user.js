@@ -28,7 +28,7 @@ const resolvers = {
 
   Query: {
     users: async () => {
-      const users = await User.getAll()
+      const users = await User.getUserAll()
       return users
     }
   }
