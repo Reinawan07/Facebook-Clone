@@ -19,6 +19,12 @@ class User {
             $or: [{ email }, { username }],
         });
     }
+
+    static async getUserToLogin(username, password) {
+        return await database.collection('users').findOne({
+            $or: [{ username }, { password }],
+        });
+    }
 }
 
 module.exports = User;

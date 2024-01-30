@@ -27,7 +27,7 @@ const typeDefs = `#graphql
 
   type Mutation {
     register(user: UserInput!): User
-    login(email: String!, password: String!): Token
+    login(username: String!, password: String!): Token
   }
 
   input UserInput {
@@ -95,11 +95,11 @@ const resolvers = {
 
     login: async (_, args) => {
       try {
-        const { email, password } = args;
-        const user = await User.getUserToAdd(email);
+        const { username, password } = args;
+        const user = await User.getUserToLogin(username);
 
         if (!user || !comparePassword(password, user.password)) {
-          throw new GraphQLError('Invalid email/password', {
+          throw new GraphQLError('Invalid username/password', {
             extensions: { code: '401 Unauthenticated' },
           });
         }
@@ -107,7 +107,7 @@ const resolvers = {
         return {
           access_token: signToken({
             id: user._id,
-            email: user.email,
+            username: user.username,
           }),
         };
       } catch (error) {
