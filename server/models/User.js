@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const { database } = require("../config/mongodb");
 
 class User {
@@ -24,6 +25,12 @@ class User {
         return await database.collection('users').findOne({
             $or: [{ username }, { password }],
         });
+    }
+
+    static async getUserById(id) {
+        const users = database.collection('users');
+        const result = await users.findOne({ _id: new ObjectId(id) });
+        return result;
     }
 }
 

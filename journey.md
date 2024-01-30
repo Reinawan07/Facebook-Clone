@@ -28,7 +28,7 @@ Buatlah fungsi/method pada aplikasi server GraphQL kamu yang menghubungkan denga
 - [x] Get user by username dan password: untuk kebutuhan login
 - [ ] Search users by name/username: untuk kebutuhan mencari user berdasarkan nama atau username
 - [ ] Follow User: untuk kebutuhan memfollow user
-- [ ] Get User by Id: untuk menampilkan profile user
+- [x] Get User by Id: untuk menampilkan profile user
 - [ ] Add Post: untuk menambahkan post baru
 - [ ] Get Posts: mengambil daftar post berdasarkan yang terbaru
 - [ ] Get Post by Id: mengambil post berdasarkan id

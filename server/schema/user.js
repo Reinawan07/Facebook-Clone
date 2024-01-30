@@ -15,6 +15,7 @@ const { signToken } = require('../helpers/jwt');
 const typeDefs = `#graphql
  
   type User {
+    _id: ID!
     name: String
     username: String!
     email: String!
@@ -31,6 +32,7 @@ const typeDefs = `#graphql
   }
 
   input UserInput {
+    _id: ID!
     name: String
     username: String!
     email: String!
@@ -39,6 +41,7 @@ const typeDefs = `#graphql
 
   type Query {
     users: [User]
+    userById(id: ID!): User
   }
 `;
 
@@ -48,7 +51,17 @@ const resolvers = {
       const users = await User.getUserAll();
       return users;
     },
+
+    userById: async (_, { id }) => {
+      try {
+        const user = await User.getUserById(id);
+        return user;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
+
 
   Mutation: {
     register: async (_, { user }) => {
