@@ -112,14 +112,14 @@ const resolvers = {
 
     posts: async (parent, args, contextValue) => {
       await contextValue.authentication();
-      const posts = await Post.getPostAll()
-      return posts
+      const result = await Post.getPostAll()
+      return result
     },
 
     postsById: async (_, { id }) => {
       try {
-        const post = await Post.getPostrById(id);
-        return post;
+        const result = await Post.getPostrById(id);
+        return result;
       } catch (error) {
         throw error;
       }

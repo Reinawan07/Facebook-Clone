@@ -18,14 +18,14 @@ class Post {
 
     // add
     static async addPost(post) {
-		const currentTime = new Date();
+		const date = new Date();
 		const posts = database.collection('posts');
 		const response = await posts.insertOne({
 			...post,
 			comments: [],
 			likes: [],
-			createdAt: currentTime,
-			updatedAt: currentTime,
+			createdAt: date,
+			updatedAt: date,
 		});
 		const result = await posts.findOne({ _id: response.insertedId });
 		return result;

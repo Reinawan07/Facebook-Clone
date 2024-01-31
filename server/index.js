@@ -4,12 +4,13 @@ const { startStandaloneServer } = require('@apollo/server/standalone');
 
 const { typeDefs: userTypeDefs, resolvers: userResolvers } = require('./schema/user');
 const { typeDefs: postTypeDefs, resolvers: postResolvers } = require('./schema/post');
+const { typeDefs: followTypeDefs, resolvers: followResolvers } = require('./schema/follow');
 const authentication = require('./middleware/authentication');
 const { connect } = require('./config/mongodb');
 
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs, postTypeDefs],
-  resolvers: [userResolvers, postResolvers],
+  typeDefs: [userTypeDefs, postTypeDefs, followTypeDefs],
+  resolvers: [userResolvers, postResolvers, followResolvers],
 })
 
 connect()
