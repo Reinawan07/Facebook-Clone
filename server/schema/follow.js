@@ -25,6 +25,7 @@ const resolvers = {
                 const { userId } = args;
 
                 const follows = await Follow.getFollow(userId, currentUser.id);
+                
                 if (follows) {
                     throw new GraphQLError('Already following', {
                         extensions: { code: '400 Bad Request' },

@@ -51,7 +51,7 @@ Buatlah lookup/relasi pada method/fungsi yang berhubungan dengan MongoDB yang su
 ### Redis - Cache
 Implementasikan cache pada aplikasi GraphQL server yang sudah dibuat dengan detail sebagai berikut:
 - [x] Implementasikan cache pada Get Post (Query)
-- [ ] Invalidate cache pada Add Post (Mutation)
+- [x] Invalidate cache pada Add Post (Mutation)
 
 ## Day 3
 ### React Native

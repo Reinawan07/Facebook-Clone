@@ -19,7 +19,7 @@ const typeDefs = `#graphql
     name: String
     username: String!
     email: String!
-    password: String!
+    password: String
   }
 
   type Token {

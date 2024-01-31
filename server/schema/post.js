@@ -125,7 +125,7 @@ const resolvers = {
 				console.log('from mongodb');
 
 				const posts = await Post.getPostAll();
-				console.log(posts);
+				// console.log(posts);
 				await redis.set('post:all', JSON.stringify(posts), 'EX', 5);
 				return posts;
 
