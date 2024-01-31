@@ -161,6 +161,8 @@ const resolvers = {
           imgUrl,
           authorId: user.id
         })
+        await redis.del('post:all');
+        
         return result;
       } catch (error) {
         throw error;

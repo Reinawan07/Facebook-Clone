@@ -48,13 +48,14 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    users: async () => {
-      const users = await User.getUserAll();
+    users: async (parent, args, contextValue) => {
+      const users = await  User.getUserAll();
       return users;
     },
 
-    userById: async (_, { id }) => {
+    userById: async (_, { id }, contextValue) => {
       try {
+        await contextValue.authentication();
         const user = await User.getUserById(id);
         return user;
       } catch (error) {
