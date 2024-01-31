@@ -49,6 +49,7 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     users: async (parent, args, contextValue) => {
+      await contextValue.authentication();
       const users = await  User.getUserAll();
       return users;
     },
@@ -63,8 +64,9 @@ const resolvers = {
       }
     },
     
-    searchUsers: async (_, { query }) => {
+    searchUsers: async (_, { query }, contextValue) => {
       try {
+        await contextValue.authentication();
         const users = await User.searchUsers(query);
         return users;
       } catch (error) {

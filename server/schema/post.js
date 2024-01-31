@@ -134,8 +134,9 @@ const resolvers = {
 			}
     },
 
-    postsById: async (_, { id }) => {
+    postsById: async (_, { id }, contextValue) => {
       try {
+        await contextValue.authentication();
         const result = await Post.getPostById(id);
         return result;
       } catch (error) {
