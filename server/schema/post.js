@@ -1,3 +1,4 @@
+const redis = require("../config/redis");
 const Post = require("../models/Posts");
 const { GraphQLError } = require('graphql');
 
@@ -104,7 +105,7 @@ const typeDefs = `#graphql
   type Mutation {
     addPost(post: NewPost!): Post
     commentPost(postId: ID!, comment: String!): String
-    addLike(postId: ID!): String
+    likePost(postId: ID!): String
   }
 `;
 
@@ -113,9 +114,24 @@ const resolvers = {
   Query: {
 
     posts: async (parent, args, contextValue) => {
-      await contextValue.authentication();
-      const result = await Post.getPostAll()
-      return result
+      try {
+				await contextValue.authentication();
+				const postsCache = await redis.get('post:all');
+
+				if (postsCache) {
+					console.log('from redis');
+					return JSON.parse(postsCache);
+				}
+				console.log('from mongodb');
+
+				const posts = await Post.getPostAll();
+				console.log(posts);
+				await redis.set('post:all', JSON.stringify(posts), 'EX', 5);
+				return posts;
+
+			} catch (error) {
+				throw error;
+			}
     },
 
     postsById: async (_, { id }) => {
@@ -131,7 +147,7 @@ const resolvers = {
     addPost: async (_, { post }, contextValue) => {
       try {
         const user = await contextValue.authentication();
-        const { content, tags, imgUrl} = post;
+        const { content, tags, imgUrl } = post;
 
         if (!content) {
           throw new GraphQLError('Content is required', {
@@ -152,38 +168,63 @@ const resolvers = {
     },
 
     commentPost: async (parent, args, contextValue) => {
-			try {
-				const user = await contextValue.authentication();
-				const { postId, comment } = args;
-				const post = await Post.getPostById(postId);
+      try {
+        const user = await contextValue.authentication();
+        const { postId, comment } = args;
+        const post = await Post.getPostById(postId);
 
-				if (!post) {
+        if (!post) {
           throw new GraphQLError('Post not found', {
             extensions: { code: '404 Not Found' },
           });
-				}
+        }
 
-				if (!comment) {
-					throw new GraphQLError('Content is required', {
-						extensions: { code: '400 Bad Request' },
-					});
-				}
+        if (!comment) {
+          throw new GraphQLError('Content is required', {
+            extensions: { code: '400 Bad Request' },
+          });
+        }
 
-				const { matchedCount } = await Post.commentPost(
-					postId,
-					comment,
-					user.id
-				);
+        const { matchedCount } = await Post.commentPost(
+          postId,
+          comment,
+          user.id 
+        );
 
-				if (matchedCount) {
-					return 'Comment added successfully';
-				}
+        if (matchedCount) {
+          return 'Comment added successfully';
+        }
 
-				return 'Comment not added';
-			} catch (error) {
-				throw error;
-			}
-		},
+        return 'Comment not added';
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    likePost: async (parent, args, contextValue) => {
+      try {
+        const user = await contextValue.authentication();
+        const { postId } = args;
+        const post = await Post.getPostById(postId);
+
+        if (!post) {
+          throw new GraphQLError('Post not found', {
+            extensions: { code: '404 Not Found' },
+          });
+        }
+
+        const { matchedCount } = await Post.likePost(postId, user.username);
+
+        if (matchedCount) {
+          return 'Post liked successfully';
+        }
+
+        return 'Post not liked';
+      } catch (error) {
+        throw error;
+      }
+    },
+
   }
 }
 

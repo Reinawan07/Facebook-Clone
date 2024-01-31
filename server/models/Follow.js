@@ -26,6 +26,25 @@ class Follow {
             followerId,
         });
     }
+
+    // unfollow
+    static async unfollowUser(userId, follower) {
+        try {
+            const follows = database.collection('follows');
+            const result = await follows.deleteOne({
+                followingId: new ObjectId(userId),
+                followerId: follower,
+            });
+
+            if (result.deletedCount > 0) {
+                return { success: true, message: 'Unfollow successful' };
+            } else {
+                return { success: false, message: 'User not found in followers list' };
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = Follow

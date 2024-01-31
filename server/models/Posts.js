@@ -48,6 +48,23 @@ class Post {
             }
         );
     }
+
+    static async likePost(postId, username) {
+        const date = new Date();
+        return await database.collection('posts').updateOne(
+            { _id: new ObjectId(postId) },
+            {
+                $push: {
+                    likes: {
+                        username,
+                        createdAt: date,
+                        updatedAt: date,
+                    },
+                },
+            }
+        );
+    }
+
 }
 
 module.exports = Post;
