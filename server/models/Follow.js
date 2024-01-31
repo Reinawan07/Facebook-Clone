@@ -13,7 +13,7 @@ class Follow {
                 createdAt: date,
                 updatedAt: date,
             });
-            return result;
+             return await follows.findOne({ _id: result.insertedId });
         } catch (error) {
             throw error; 
         }

@@ -103,7 +103,8 @@ const typeDefs = `#graphql
 
   type Mutation {
     addPost(post: NewPost!): Post
-    addComment(postId: ID!, comment: String!): String
+    commentPost(postId: ID!, comment: String!): String
+    addLike(postId: ID!): String
   }
 `;
 
@@ -150,7 +151,7 @@ const resolvers = {
       }
     },
 
-    addComment: async (parent, args, contextValue) => {
+    commentPost: async (parent, args, contextValue) => {
 			try {
 				const user = await contextValue.authentication();
 				const { postId, comment } = args;
