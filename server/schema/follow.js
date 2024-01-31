@@ -32,8 +32,10 @@ const resolvers = {
                 }
 
                 const follow = await Follow.followUser(userId, currentUser.id);
+                console.log("Follow Mutation Result:", currentUser.id);
                 return follow;
             } catch (error) {
+                console.error("Follow Mutation Error:", error);
                 throw error;
             }
         },

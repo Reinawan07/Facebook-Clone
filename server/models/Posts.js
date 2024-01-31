@@ -10,26 +10,44 @@ class Post {
     }
 
     // getById
-    static async getPostrById(id) {
+    static async getPostById(id) {
         const posts = database.collection('posts');
         const result = await posts.findOne({ _id: new ObjectId(id) });
         return result;
     }
 
-    // add
+    // addPost
     static async addPost(post) {
-		const date = new Date();
-		const posts = database.collection('posts');
-		const response = await posts.insertOne({
-			...post,
-			comments: [],
-			likes: [],
-			createdAt: date,
-			updatedAt: date,
-		});
-		const result = await posts.findOne({ _id: response.insertedId });
-		return result;
-	}
+        const date = new Date();
+        const posts = database.collection('posts');
+        const response = await posts.insertOne({
+            ...post,
+            comments: [],
+            likes: [],
+            createdAt: date,
+            updatedAt: date,
+        });
+        const result = await posts.findOne({ _id: response.insertedId });
+        return result;
+    }
+
+    // addComment
+    static async commentPost(postId, comment, authorId) {
+        const date = new Date();
+        return await database.collection('posts').updateOne(
+            { _id: new ObjectId(postId) },
+            {
+                $push: {
+                    comments: {
+                        content: comment,
+                        authorId,
+                        createdAt: date,
+                        updatedAt: date,
+                    },
+                },
+            }
+        );
+    }
 }
 
 module.exports = Post;

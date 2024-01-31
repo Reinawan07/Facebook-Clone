@@ -2,6 +2,7 @@ const { ObjectId } = require("mongodb");
 const { database } = require("../config/mongodb");
 
 class Follow {
+    // add follow
     static async followUser(userId, follower) {
         try {
             const date = new Date();
@@ -18,7 +19,7 @@ class Follow {
         }
     }
     
-
+    // get follow
     static async getFollow(followingId, followerId) {
         return await database.collection('follows').findOne({
             followingId: new ObjectId(followingId),

@@ -103,6 +103,7 @@ const typeDefs = `#graphql
 
   type Mutation {
     addPost(post: NewPost!): Post
+    addComment(postId: ID!, comment: String!): String
   }
 `;
 
@@ -118,7 +119,7 @@ const resolvers = {
 
     postsById: async (_, { id }) => {
       try {
-        const result = await Post.getPostrById(id);
+        const result = await Post.getPostById(id);
         return result;
       } catch (error) {
         throw error;
@@ -148,6 +149,40 @@ const resolvers = {
         throw error;
       }
     },
+
+    addComment: async (parent, args, contextValue) => {
+			try {
+				const user = await contextValue.authentication();
+				const { postId, comment } = args;
+				const post = await Post.getPostById(postId);
+
+				if (!post) {
+          throw new GraphQLError('Post not found', {
+            extensions: { code: '404 Not Found' },
+          });
+				}
+
+				if (!comment) {
+					throw new GraphQLError('Content is required', {
+						extensions: { code: '400 Bad Request' },
+					});
+				}
+
+				const { matchedCount } = await Post.commentPost(
+					postId,
+					comment,
+					user.id
+				);
+
+				if (matchedCount) {
+					return 'Comment added successfully';
+				}
+
+				return 'Comment not added';
+			} catch (error) {
+				throw error;
+			}
+		},
   }
 }
 
