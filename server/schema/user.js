@@ -15,7 +15,7 @@ const { signToken } = require('../helpers/jwt');
 const typeDefs = `#graphql
  
   type User {
-    _id: ID!
+    _id: ID
     name: String
     username: String!
     email: String!
@@ -32,7 +32,7 @@ const typeDefs = `#graphql
   }
 
   input UserInput {
-    _id: ID!
+    # _id: ID
     name: String
     username: String!
     email: String!

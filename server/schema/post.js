@@ -1,4 +1,6 @@
 const Post = require("../models/Posts");
+const { GraphQLError } = require('graphql');
+
 
 // const posts = [
 //   {
@@ -61,7 +63,6 @@ const Post = require("../models/Posts");
 // ]
 
 const typeDefs = `#graphql
-scalar Date
  
  type Post {
     _id: ID
@@ -71,28 +72,37 @@ scalar Date
     authorId: ID!
     comments: [Comment]
     likes: [Like]
-    createdAt: Date
-    updatedAt: Date
+    createdAt: String
+    updatedAt: String
     user: User
   }
 
   type Comment {
     content: String!
     username: String!
-    createdAt: Date
-    updatedAt: Date
+    createdAt: String
+    updatedAt: String
   }
 
   type Like {
     username: String!
-    createdAt: Date
-    updatedAt: Date
+    createdAt: String
+    updatedAt: String
   }
 
+  input NewPost {
+    content: String!
+    tags: [String]
+    imgUrl: String
+  }
 
   type Query {
     posts: [Post]
     postsById(id: ID!): Post
+  }
+
+  type Mutation {
+    addPost(post: NewPost!): Post
   }
 `;
 
@@ -110,6 +120,30 @@ const resolvers = {
       try {
         const post = await Post.getPostrById(id);
         return post;
+      } catch (error) {
+        throw error;
+      }
+    },
+  },
+  Mutation: {
+    addPost: async (_, { post }, contextValue) => {
+      try {
+        const user = await contextValue.authentication();
+        const { content, tags, imgUrl} = post;
+
+        if (!content) {
+          throw new GraphQLError('Content is required', {
+            extensions: { code: '400 Bad Request' },
+          });
+        }
+
+        const result = await Post.addPost({
+          content,
+          tags,
+          imgUrl,
+          authorId: user.id
+        })
+        return result;
       } catch (error) {
         throw error;
       }
