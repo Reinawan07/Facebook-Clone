@@ -12,9 +12,53 @@ class Post {
     // getById
     static async getPostById(id) {
         const posts = database.collection('posts');
-        const result = await posts.findOne({ _id: new ObjectId(id) });
-        return result;
+    
+        const result = await posts.aggregate([
+            {
+                $match: { _id: new ObjectId(id) }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'authorId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: '$user'
+            },
+            {
+                $project: {
+                    _id: 1,
+                    content: 1,
+                    tags: 1,
+                    imgUrl: 1,
+                    authorId: 1,
+                    comments: {
+                        $map: {
+                            input: '$comments',
+                            as: 'comment',
+                            in: {
+                                content: '$$comment.content',
+                                username: { $ifNull: ['$$comment.username', 'Unknown User'] },
+                                createdAt: '$$comment.createdAt',
+                                updatedAt: '$$comment.updatedAt',
+                                user: '$user'
+                            }
+                        }
+                    },
+                    likes: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    user: '$user'
+                }
+            }
+        ]).toArray();
+    
+        return result[0];
     }
+    
 
     // addPost
     static async addPost(post) {
