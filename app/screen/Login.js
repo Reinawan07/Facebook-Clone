@@ -30,7 +30,7 @@ function Login({ navigation }) {
                 value={password}
                 onChangeText={(text) => setPassword(text)}
             />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
             <View style={styles.separator} />
