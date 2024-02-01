@@ -35,9 +35,46 @@ class User {
     // GetById
     static async getUserById(id) {
         const users = database.collection('users');
-        const result = await users.findOne({ _id: new ObjectId(id) });
-        return result;
+    
+        const result = await users.aggregate([
+            {
+                $match: { _id: new ObjectId(id) }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: 'followers',
+                    as: 'followers'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: 'following',
+                    as: 'following'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    username: 1,
+                    email: 1,
+                    follow: {
+                        followers: '$followers',
+                        following: '$following'
+                    }
+                }
+            }
+        ]).toArray();
+    
+        return result[0];
     }
+    
+    
+    
 
     static async searchUsers(query) {
         const users = database.collection('users');

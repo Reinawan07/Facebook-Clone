@@ -75,6 +75,19 @@ const typeDefs = `#graphql
     likes: [Like]
     createdAt: String
     updatedAt: String
+    # user: User
+  }
+
+ type PostDetail {
+    _id: ID
+    content: String!
+    tags: [String]
+    imgUrl: String
+    authorId: ID!
+    comments: [Comment]
+    likes: [Like]
+    createdAt: String
+    updatedAt: String
     user: User
   }
 
@@ -99,7 +112,7 @@ const typeDefs = `#graphql
 
   type Query {
     posts: [Post]
-    postsById(id: ID!): Post
+    postsById(id: ID!): PostDetail
   }
 
   type Mutation {

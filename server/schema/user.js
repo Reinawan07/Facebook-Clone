@@ -22,6 +22,16 @@ const typeDefs = `#graphql
     password: String
   }
 
+  type UserById {
+    _id: ID
+    name: String
+    username: String!
+    email: String!
+    following: User
+    followers: User
+  }
+
+
   type Token {
     access_token: String!
   }
@@ -41,7 +51,7 @@ const typeDefs = `#graphql
 
   type Query {
     users: [User]
-    userById(id: ID!): User
+    userById(id: ID!): UserById
     searchUsers(query: String!): [User]
   }
 `;
@@ -50,7 +60,7 @@ const resolvers = {
   Query: {
     users: async (parent, args, contextValue) => {
       await contextValue.authentication();
-      const users = await  User.getUserAll();
+      const users = await User.getUserAll();
       return users;
     },
 
@@ -63,7 +73,7 @@ const resolvers = {
         throw error;
       }
     },
-    
+
     searchUsers: async (_, { query }, contextValue) => {
       try {
         await contextValue.authentication();
