@@ -15,7 +15,7 @@ const posts = [
 
 ];
 
-function Home() {
+function Home({navigation}) {
     return (
         <ScrollView style={styles.container}>
             {posts.map((post) => (
@@ -44,7 +44,7 @@ function Home() {
                                 <Text style={styles.buttonText}>Like</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.button} onPress={() => console.log('Comment')}>
+                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DetailPost')}>
                                 <Text style={styles.buttonText}>Comment</Text>
                             </TouchableOpacity>
                         </View>

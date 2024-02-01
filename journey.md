@@ -62,9 +62,9 @@ Pada aplikasi ini kamu perlu membuat screen sebagai berikut:
   - [x] Register Screen: Menampilkan form untuk register
 
 - [ ] Authenticate screen
-  - [ ] Home screen: Menampilkan list post
+  - [x] Home screen: Menampilkan list post
   - [ ] Create Post: Menampilkan form untuk menambahkan post baru
-  - [ ] Post Detail Screen: Menampilkan post detail berdasarkan id dan form untuk komentar
+  - [x] Post Detail Screen: Menampilkan post detail berdasarkan id dan form untuk komentar
   - [ ] Search Screen: Menampilkan form pencarian untuk mencari user (bisa digabung dengan screen lain)
   - [ ] Profile Screen: Menampilkan profile user berdasarkan id, serta menampilkan jumlah followings dan followers user.
 
