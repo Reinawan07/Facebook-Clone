@@ -58,7 +58,7 @@ Implementasikan cache pada aplikasi GraphQL server yang sudah dibuat dengan deta
 Buatlah aplikasi mobile React-Native dengan menggunakan expo. Aplikasi ini adalah client side dari challenge My Social Media App.
 Pada aplikasi ini kamu perlu membuat screen sebagai berikut:
 - [ ] Unauthenticate screen
-  - [ ] Login Screen: Menampilkan form untuk login
+  - [x] Login Screen: Menampilkan form untuk login
   - [ ] Register Screen: Menampilkan form untuk register
 
 - [ ] Authenticate screen
