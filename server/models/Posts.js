@@ -32,7 +32,7 @@ class Post {
     }
 
     // addComment
-    static async commentPost(postId, comment, authorId) {
+    static async commentPost(postId, comment, username) {
         const date = new Date();
         return await database.collection('posts').updateOne(
             { _id: new ObjectId(postId) },
@@ -40,7 +40,7 @@ class Post {
                 $push: {
                     comments: {
                         content: comment,
-                        authorId,
+                        username,
                         createdAt: date,
                         updatedAt: date,
                     },

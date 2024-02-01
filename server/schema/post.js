@@ -191,7 +191,7 @@ const resolvers = {
         const { matchedCount } = await Post.commentPost(
           postId,
           comment,
-          user.id 
+          user.username 
         );
 
         if (matchedCount) {
