@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screen/Home';
@@ -9,12 +9,10 @@ import Login from './screen/Login';
 import Register from './screen/Register';
 import DetailPost from './screen/DetailPost';
 import { AntDesign, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-import { Button } from 'react-native';
-
+import { Alert, Button } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
 
 function TabNavigator() {
   return (
@@ -53,6 +51,38 @@ function TabNavigator() {
   );
 }
 
+function HomeScreen() {
+  const { navigate } = useNavigation();
+
+  const handleLogout = () => {
+
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            navigate('Login');
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  return (
+    <Button
+      onPress={handleLogout}
+      title="Logout"
+      color="#1877f2"
+    />
+  );
+}
 
 const App = () => {
   return (
@@ -60,14 +90,12 @@ const App = () => {
       <Stack.Navigator>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Home" component={TabNavigator} options={{ title: 'Facebook',
+        <Stack.Screen name="Home" component={TabNavigator} options={{
+          title: 'Facebook',
           headerRight: () => (
-            <Button
-              onPress={() => alert('Are you sure?')}
-              title="Logout"
-              color="#1877f2"
-            />
-          ), }} />
+            <HomeScreen />
+          ),
+        }} />
         <Stack.Screen name="DetailPost" component={DetailPost} />
       </Stack.Navigator>
     </NavigationContainer>
