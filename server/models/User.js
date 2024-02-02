@@ -42,30 +42,47 @@ class User {
             },
             {
                 $lookup: {
-                    from: 'users',
+                    from: 'follows',
                     localField: '_id',
-                    foreignField: 'followers',
+                    foreignField: 'followingId',
                     as: 'followers'
                 }
             },
             {
                 $lookup: {
                     from: 'users',
+                    localField: 'followers.followerId',
+                    foreignField: '_id',
+                    as: 'userFollowers'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'follows',
                     localField: '_id',
-                    foreignField: 'following',
+                    foreignField: 'followerId',
                     as: 'following'
                 }
             },
             {
+                $lookup: {
+                    from: 'users',
+                    localField: 'following.followingId',
+                    foreignField: '_id',
+                    as: 'userFollowing'
+                }
+            },
+            {
                 $project: {
-                    _id: 1,
-                    name: 1,
-                    username: 1,
-                    email: 1,
-                    follow: {
-                        followers: '$followers',
-                        following: '$following'
-                    }
+                    password: 0,
+                    // _id: 1,
+                    // name: 1,
+                    // username: 1,
+                    // email: 1,
+                    // follow: {
+                    //     followers: '$followers',
+                    //     following: '$following'
+                    // }
                 }
             }
         ]).toArray();

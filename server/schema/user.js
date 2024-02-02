@@ -68,6 +68,7 @@ const resolvers = {
       try {
         await contextValue.authentication();
         const user = await User.getUserById(id);
+        console.log(user);
         return user;
       } catch (error) {
         throw error;
