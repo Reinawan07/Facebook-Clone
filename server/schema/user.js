@@ -59,6 +59,8 @@ const typeDefs = `#graphql
   }
 `;
 
+const DEFAULT_PROFILE_IMAGE = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-9…';
+
 const resolvers = {
   Query: {
     users: async (parent, args, contextValue) => {
@@ -124,6 +126,7 @@ const resolvers = {
 
         const result = await User.addUser({
           ...user,
+          profileImage: DEFAULT_PROFILE_IMAGE,
           password: hashPassword(password),
         });
 

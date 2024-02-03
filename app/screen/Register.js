@@ -1,13 +1,46 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { useMutation } from '@apollo/client';
+import { gql } from '@apollo/client';
 
+const REGISTER_MUTATION = gql`
+  mutation Register($user: UserInput!) {
+    register(user: $user) {
+      _id
+      name
+      username
+      email
+      password
+    }
+  }
+`;
 function Register({ navigation }) {
     const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleRegister = () => {
-        
+    const [register, { loading, error }] = useMutation(REGISTER_MUTATION);
+
+    const handleRegister = async () => {
+        try {
+            const response = await register({
+                variables: {
+                    user: {
+                        name,
+                        username,
+                        email,
+                        password,
+                    },
+                },
+            });
+            console.log(response.data.register);
+
+            // Navigasi ke halaman login setelah pendaftaran berhasil
+            navigation.navigate('Login');
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -26,8 +59,8 @@ function Register({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="Username"
-                value={name}
-                onChangeText={(text) => setName(text)}
+                value={username}
+                onChangeText={(text) => setUsername(text)}
             />
             <TextInput
                 style={styles.input}
@@ -46,9 +79,10 @@ function Register({ navigation }) {
             <TouchableOpacity style={styles.button} onPress={handleRegister}>
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
+
             <View style={styles.separator} />
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.loginLink}>Already have an account? Log in.</Text>
+                <Text style={styles.loginLink}>Already have an account? Log in.</Text>
             </TouchableOpacity>
         </View>
     );
