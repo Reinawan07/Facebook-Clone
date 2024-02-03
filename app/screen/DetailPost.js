@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, KeyboardAvoidingView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { gql } from '@apollo/client';
 
 const POSTS_BY_ID_QUERY = gql`
@@ -37,17 +37,23 @@ const POSTS_BY_ID_QUERY = gql`
   }
 `;
 
-const DetailPost = ({ route, navigation }) => {
+const COMMENT_POST_MUTATION = gql`
+  mutation CommentPost($postId: ID!, $comment: String!) {
+    commentPost(postId: $postId, comment: $comment)
+  }
+`;
+
+const DetailPost = ({ route }) => {
     const [newComment, setNewComment] = useState('');
     const scrollViewRef = useRef();
 
     const { postsByIdId } = route.params || {};
-    console.log('Post ID:', postsByIdId);
+    // console.log('Post ID:', postsByIdId);
 
     const { loading, error, data } = useQuery(POSTS_BY_ID_QUERY, {
         variables: { postsByIdId: postsByIdId },
     });
-    console.log('Post:', data?.postsById);
+    // console.log('Post:', data?.postsById);
     const post = data?.postsById || {};
 
     useEffect(() => {
@@ -57,10 +63,11 @@ const DetailPost = ({ route, navigation }) => {
     const likesCount = post.likes ? post.likes.length : 0;
     const commentsCount = post.comments ? post.comments.length : 0;
 
-    const handleCommentSubmit = () => {
-        console.log('Comment submitted:', newComment);
-        setNewComment('');
-    };
+    const [commentPost, { refetch }] = useMutation(COMMENT_POST_MUTATION, {
+        onCompleted: () => {
+            refetch();
+        },
+    });
 
     return (
         <KeyboardAvoidingView style={styles.container}>
@@ -97,16 +104,26 @@ const DetailPost = ({ route, navigation }) => {
                     <View style={styles.commentsContainer}>
                         <Text style={styles.commentsTitle}>Comments</Text>
                         {post.comments && post.comments.length > 0 ? (
-                            post.comments.map((comment) => (
-                                <View key={comment.id} style={styles.commentContainer}>
-                                    <Text style={styles.commentUsername}>{comment.username}</Text>
-                                    <Text style={styles.commentText}>{comment.text}</Text>
+                            post.comments.map((comment, index) => (
+                                <View key={index} style={styles.chatContainer}>
+                                    <View style={styles.chatImage}>
+                                        <Image source={{ uri: post.user.profileImage }} style={{ flex: 1, borderRadius: 20 }} />
+                                    </View>
+                                    <View>
+                                        <View style={styles.chatHeader}>
+                                            <Text>{comment.username}</Text>
+                                        </View>
+                                        <View style={styles.chatBubble}>
+                                            <Text>{comment.content}</Text>
+                                        </View>
+                                    </View>
                                 </View>
                             ))
                         ) : (
                             <Text>No comments yet.</Text>
                         )}
                     </View>
+
                 </View>
             </ScrollView>
             <View style={styles.commentInputContainer}>
@@ -116,7 +133,8 @@ const DetailPost = ({ route, navigation }) => {
                     value={newComment}
                     onChangeText={(text) => setNewComment(text)}
                 />
-                <TouchableOpacity style={styles.commentButton} onPress={handleCommentSubmit}>
+                <TouchableOpacity style={styles.commentButton}
+                    onPress={() => commentPost({ variables: { postId: postsByIdId, comment: newComment } })}>
                     <Text style={styles.commentButtonText}>Post</Text>
                 </TouchableOpacity>
             </View>
@@ -231,6 +249,31 @@ const styles = StyleSheet.create({
     },
     commentButtonText: {
         color: 'white',
+    },
+    chatContainer: {
+        marginBottom: 20,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    chatImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        marginRight: 10,
+    },
+    chatHeader: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    chatBubble: {
+        maxWidth: '100%',
+        backgroundColor: '#DCF8C6',
+        padding: 10,
+        borderRadius: 15,
+    },
+    chatFooter: {
+        fontSize: 12,
+        opacity: 0.5,
     },
 });
 
