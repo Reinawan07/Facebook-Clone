@@ -3,12 +3,19 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
 const formatDate = (timestamp) => {
-  const options = {  month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
   const date = new Date(timestamp * 1000);
   return date.toLocaleDateString('en-US', options);
 };
 
 const Card = ({ post, navigation }) => {
+  
+  const handleCommentPress = () => {
+    navigation.navigate('DetailPost', {
+      postsByIdId: post._id,
+    });
+  };
+
   return (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
@@ -31,11 +38,11 @@ const Card = ({ post, navigation }) => {
           <Text style={styles.commentCount}>{post.comments.length} comments</Text>
         </View>
         <View style={styles.likeCommentButtons}>
-          <TouchableOpacity style={styles.button} onPress={() => console.log('Like')}>
+          <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Like</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DetailPost')}>
+          <TouchableOpacity style={styles.button} onPress={handleCommentPress}>
             <Text style={styles.buttonText}>Comment</Text>
           </TouchableOpacity>
         </View>

@@ -1,4 +1,3 @@
-// AuthContext.js
 import React, { createContext, useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 
@@ -14,11 +13,10 @@ export default function AuthProvider({ children }) {
         const storedAccessToken = await SecureStore.getItemAsync('accessToken');
 
         if (storedAccessToken !== null && storedAccessToken !== undefined) {
-          // Token exists and is not null or undefined
           setIsSignedIn(true);
           setAccessToken(storedAccessToken);
+
         } else {
-          // Token is null or undefined
           console.error('Access token not found or undefined.');
         }
       } catch (error) {

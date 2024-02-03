@@ -1,83 +1,114 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput, KeyboardAvoidingView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import { useQuery } from '@apollo/client';
+import { gql } from '@apollo/client';
 
-const post = {
-    id: 1,
-    username: 'John Doe',
-    timeAgo: '2 hours ago',
-    postText: 'This is a sample post. #ReactNative #FacebookClone',
-    imageUrl: 'https://placekitten.com/300/200',
-    likes: 15,
-    comments: [
-        { id: 1, username: 'Alice', text: 'Nice post!' },
-        { id: 2, username: 'Bob', text: 'Great content!' },
-        { id: 3, username: 'Alice', text: 'Nice post!' },
-        { id: 4, username: 'Bob', text: 'Great content!' },
-        { id: 5, username: 'Alice', text: 'Nice post!' },
-        { id: 6, username: 'Bob', text: 'Great content!' },
-        { id: 7, username: 'Alice', text: 'Nice post!' },
-        { id: 8, username: 'Bob', text: 'Great content!' },
-        { id: 9, username: 'Alice', text: 'Nice post!' },
-        { id: 10, username: 'Bob', text: 'Great content!' },
-    ],
-};
+const POSTS_BY_ID_QUERY = gql`
+  query Query($postsByIdId: ID!) {
+    postsById(id: $postsByIdId) {
+      _id
+      content
+      tags
+      imgUrl
+      authorId
+      comments {
+        content
+        username
+        createdAt
+        updatedAt
+      }
+      likes {
+        username
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      user {
+        _id
+        name
+        username
+        email
+        profileImage
+        password
+      }
+    }
+  }
+`;
 
-function DetailPost() {
+const DetailPost = ({ route, navigation }) => {
     const [newComment, setNewComment] = useState('');
     const scrollViewRef = useRef();
 
-    const handleCommentSubmit = () => {
+    const { postsByIdId } = route.params || {};
+    console.log('Post ID:', postsByIdId);
 
-        console.log('Comment submitted:', newComment);
+    const { loading, error, data } = useQuery(POSTS_BY_ID_QUERY, {
+        variables: { postsByIdId: postsByIdId },
+    });
+    console.log('Post:', data?.postsById);
+    const post = data?.postsById || {};
 
-        setNewComment('');
+    useEffect(() => {
         scrollViewRef.current.scrollToEnd({ animated: true });
+    }, [post.comments]);
+
+    const likesCount = post.likes ? post.likes.length : 0;
+    const commentsCount = post.comments ? post.comments.length : 0;
+
+    const handleCommentSubmit = () => {
+        console.log('Comment submitted:', newComment);
+        setNewComment('');
     };
 
     return (
         <KeyboardAvoidingView style={styles.container}>
-
-            <ScrollView
-                ref={scrollViewRef} style={styles.contentContainer}>
-
+            <ScrollView ref={scrollViewRef} style={styles.contentContainer}>
                 <View style={styles.postContainer}>
                     <View style={styles.postHeader}>
-                        <Image source={{ uri: 'https://cdn.icon-icons.com/icons2/832/PNG/512/fb_icon-icons.com_66689.png' }} style={styles.profileImage} />
-                        <View>
-                            <Text style={styles.username}>{post.username}</Text>
-                            <Text style={styles.timeAgo}>{post.timeAgo}</Text>
-                        </View>
+                        {post.user ? (
+                            <>
+                                <Image source={{ uri: post.user.profileImage }} style={styles.profileImage} />
+                                <View>
+                                    <Text style={styles.username}>{post.user.username}</Text>
+                                    <Text style={styles.timeAgo}>{post.timeAgo}</Text>
+                                </View>
+                            </>
+                        ) : (
+                            <Text>Loading...</Text>
+                        )}
                     </View>
-
-                    <Text style={styles.postText}>{post.postText}</Text>
-                    {post.imageUrl && (
-                        <Image source={{ uri: post.imageUrl }} style={styles.postImage} />
+                    <Text style={styles.postText}>{post.content}</Text>
+                    {post.imgUrl && (
+                        <Image source={{ uri: post.imgUrl }} style={styles.postImage} />
                     )}
-
                     <View style={styles.likeCommentContainer}>
                         <View style={styles.likeCommentCounts}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <AntDesign name="like1" size={17} color="#1877f2" style={styles.iconLike} />
-                                <Text style={styles.likeCount}>{post.likes} likes</Text>
+                                <Text style={styles.likeCount}>{likesCount} likes</Text>
                             </View>
-                            <Text style={styles.commentCount}>{post.comments.length} comments</Text>
+                            <Text style={styles.commentCount}>
+                                {commentsCount ? `${commentsCount} comments` : 'No comments yet.'}
+                            </Text>
                         </View>
                     </View>
-
                     <View style={styles.commentsContainer}>
                         <Text style={styles.commentsTitle}>Comments</Text>
-                        {post.comments.map(comment => (
-                            <View key={comment.id} style={styles.commentContainer}>
-                                <Text style={styles.commentUsername}>{comment.username}</Text>
-                                <Text style={styles.commentText}>{comment.text}</Text>
-                            </View>
-                        ))}
+                        {post.comments && post.comments.length > 0 ? (
+                            post.comments.map((comment) => (
+                                <View key={comment.id} style={styles.commentContainer}>
+                                    <Text style={styles.commentUsername}>{comment.username}</Text>
+                                    <Text style={styles.commentText}>{comment.text}</Text>
+                                </View>
+                            ))
+                        ) : (
+                            <Text>No comments yet.</Text>
+                        )}
                     </View>
-
                 </View>
             </ScrollView>
-
             <View style={styles.commentInputContainer}>
                 <TextInput
                     style={styles.commentInput}
@@ -89,10 +120,9 @@ function DetailPost() {
                     <Text style={styles.commentButtonText}>Post</Text>
                 </TouchableOpacity>
             </View>
-            
         </KeyboardAvoidingView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {

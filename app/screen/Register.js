@@ -36,7 +36,6 @@ function Register({ navigation }) {
             });
             console.log(response.data.register);
 
-            // Navigasi ke halaman login setelah pendaftaran berhasil
             navigation.navigate('Login');
         } catch (error) {
             console.error(error);
