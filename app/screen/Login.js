@@ -1,13 +1,36 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
+import { gql, useMutation } from '@apollo/client';
+import * as SecureStore from 'expo-secure-store';
+
+const LOGIN_MUTATION = gql`
+mutation Login($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    access_token
+  }
+}
+`;
 
 function Login({ navigation }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        
-    };
+    const authContext = useContext(AuthContext);
+
+    const [login, { loading, error, data }] = useMutation(LOGIN_MUTATION, {
+        onCompleted: async (data) => {
+          console.log('Login successful. Access Token:', data.login?.access_token);
+          if (data.login?.access_token) {
+            await SecureStore.setItemAsync('accessToken', data.login.access_token);
+            authContext.setIsSignedIn(true);
+          } else {
+            console.error('Invalid access token received during login.');
+          }
+        },
+      });
+    
+    // console.log(loading, error, data, 'dataLogin <<<<<');
 
     return (
         <View style={styles.container}>
@@ -19,7 +42,7 @@ function Login({ navigation }) {
             <Text style={styles.title}>Login to Facebook</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder="Username"
                 value={username}
                 onChangeText={(text) => setUsername(text)}
             />
@@ -30,9 +53,16 @@ function Login({ navigation }) {
                 value={password}
                 onChangeText={(text) => setPassword(text)}
             />
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                    login({ variables: { username, password } });
+                    // authContext.setIsSignedIn(true);
+                }}>
+
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
+
             <View style={styles.separator} />
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <Text style={styles.registerLink}>Create New Account</Text>

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, ScrollView } from 'react-native';
 import Card from '../components/Card';
+import { gql, useQuery } from '@apollo/client';
+import { AuthContext } from '../context/AuthContext';
 
 const posts = [
   {
@@ -32,8 +34,45 @@ const posts = [
   },
 ];
 
+const POSTS_QUERY = gql`
+query Posts {
+  posts {
+    _id
+    content
+    tags
+    imgUrl
+    authorId
+    comments {
+      content
+      username
+      createdAt
+      updatedAt
+    }
+    likes {
+      username
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+`;
+
 function Home({ navigation }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const authContext = useContext(AuthContext);
+
+  const { accessToken } = authContext;
+
+  const { loading, error, data } = useQuery(POSTS_QUERY, {
+    context: {
+      headers: {
+        Authorization: accessToken ? `Bearer ${accessToken}` : '',
+      },
+    },
+  });
+  console.log(data, 'dataHOME <<<<<');
 
   const filteredPosts = posts.filter(post =>
     post.username.toLowerCase().includes(searchTerm.toLowerCase())

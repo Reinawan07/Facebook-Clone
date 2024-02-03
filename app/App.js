@@ -1,20 +1,21 @@
-import React from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useContext } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screen/Home';
 import CreatePost from './screen/CreatePost';
 import Profile from './screen/Profile';
-import Login from './screen/Login';
-import Register from './screen/Register';
-import DetailPost from './screen/DetailPost';
 import { AntDesign, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { Alert, Button } from 'react-native';
+import AuthProvider, { AuthContext } from './context/AuthContext';
+import MainStack from './navigators/MainStack';
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from './config/apolloClient';
+import * as SecureStore from 'expo-secure-store';
 
-const Stack = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 
-function TabNavigator() {
+export function TabNavigator() {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -51,10 +52,11 @@ function TabNavigator() {
   );
 }
 
-function HomeScreen() {
-  const { navigate } = useNavigation();
+export function HomeScreen() {
+  const authContext = useContext(AuthContext);
 
   const handleLogout = () => {
+
 
     Alert.alert(
       'Logout',
@@ -66,8 +68,9 @@ function HomeScreen() {
         },
         {
           text: 'Yes',
-          onPress: () => {
-            navigate('Login');
+          onPress: async () => {
+            await SecureStore.deleteItemAsync('accessToken');
+            authContext.setIsSignedIn(false);
           },
         },
       ],
@@ -86,19 +89,11 @@ function HomeScreen() {
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Home" component={TabNavigator} options={{
-          title: 'Facebook',
-          headerRight: () => (
-            <HomeScreen />
-          ),
-        }} />
-        <Stack.Screen name="DetailPost" component={DetailPost} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ApolloProvider client={apolloClient}>
+      <AuthProvider>
+        <MainStack />
+      </AuthProvider>
+    </ApolloProvider>
   );
 };
 

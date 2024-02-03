@@ -75,14 +75,6 @@ class User {
             {
                 $project: {
                     password: 0,
-                    // _id: 1,
-                    // name: 1,
-                    // username: 1,
-                    // email: 1,
-                    // follow: {
-                    //     followers: '$followers',
-                    //     following: '$following'
-                    // }
                 }
             }
         ]).toArray();
