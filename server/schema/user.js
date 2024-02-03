@@ -19,6 +19,7 @@ const typeDefs = `#graphql
     name: String
     username: String!
     email: String!
+    profileImage: String
     password: String
   }
 
@@ -27,6 +28,7 @@ const typeDefs = `#graphql
     name: String
     username: String!
     email: String!
+    profileImage: String
     following: User
     followers: User
   }
@@ -46,6 +48,7 @@ const typeDefs = `#graphql
     name: String
     username: String!
     email: String!
+    profileImage: String
     password: String!
   }
 

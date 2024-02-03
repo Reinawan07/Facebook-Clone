@@ -12,9 +12,14 @@ export default function AuthProvider({ children }) {
     const fetchData = async () => {
       try {
         const storedAccessToken = await SecureStore.getItemAsync('accessToken');
-        if (storedAccessToken) {
+
+        if (storedAccessToken !== null && storedAccessToken !== undefined) {
+          // Token exists and is not null or undefined
           setIsSignedIn(true);
           setAccessToken(storedAccessToken);
+        } else {
+          // Token is null or undefined
+          console.error('Access token not found or undefined.');
         }
       } catch (error) {
         console.error('Error fetching or decoding access token:', error);

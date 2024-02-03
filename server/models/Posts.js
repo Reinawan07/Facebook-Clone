@@ -5,9 +5,31 @@ class Post {
     // getAll
     static async getPostAll() {
         const posts = database.collection('posts');
-        const result = await posts.find().toArray();
+        const result = await posts.aggregate([
+          {
+            $sort: { createdAt: -1 },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              foreignField: '_id',
+              localField: 'authorId',
+              as: 'user',
+              pipeline: [
+                {
+                  $project: { password: 0 },
+                },
+              ],
+            },
+          },
+          {
+            $unwind: '$user',
+          },
+        ]).toArray();
+        console.log(result);
         return result;
-    }
+      }
+      
 
     // getById
     static async getPostById(id) {

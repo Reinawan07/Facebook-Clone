@@ -55,12 +55,19 @@ query Posts {
     }
     createdAt
     updatedAt
+    user {
+      _id
+      name
+      username
+      email
+      profileImage
+    }
   }
 }
 `;
 
 function Home({ navigation }) {
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
   const authContext = useContext(AuthContext);
 
   const { accessToken } = authContext;
@@ -74,23 +81,28 @@ function Home({ navigation }) {
   });
   console.log(data, 'dataHOME <<<<<');
 
-  const filteredPosts = posts.filter(post =>
-    post.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const posts = data?.posts || [];
+
+  // const filteredPosts = posts.filter(post =>
+  //   post.username.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f0f2f5', padding: 10 }}>
       <TextInput
         style={{ height: 40, borderColor: 'gray', borderWidth: 1, borderRadius: 5, marginBottom: 10, padding: 10, backgroundColor: 'white' }}
         placeholder="Search"
-        value={searchTerm}
-        onChangeText={text => setSearchTerm(text)}
+        // value={searchTerm}
+        // onChangeText={text => setSearchTerm(text)}
       />
 
       <ScrollView style={{ flex: 1 }}>
-        {filteredPosts.map(post => (
-          <Card key={post.id} post={post} navigation={navigation} />
+        {posts.map(post => (
+          <Card key={post._id} post={post} navigation={navigation} />
         ))}
+        {/* {filteredPosts.map(post => (
+          <Card key={post._id} post={post} navigation={navigation} />
+        ))} */}
       </ScrollView>
     </View>
   );

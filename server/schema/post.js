@@ -75,7 +75,7 @@ const typeDefs = `#graphql
     likes: [Like]
     createdAt: String
     updatedAt: String
-    # user: User
+    user: User
   }
 
  type PostDetail {
@@ -128,23 +128,22 @@ const resolvers = {
 
     posts: async (parent, args, contextValue) => {
       try {
-				await contextValue.authentication();
-				const postsCache = await redis.get('post:all');
-
-				if (postsCache) {
-					console.log('from redis');
-					return JSON.parse(postsCache);
-				}
-				console.log('from mongodb');
-
-				const posts = await Post.getPostAll();
-				// console.log(posts);
-				await redis.set('post:all', JSON.stringify(posts), 'EX', 5);
-				return posts;
-
-			} catch (error) {
-				throw error;
-			}
+        await contextValue.authentication();
+        const postsCache = await redis.get('post:all');
+  
+        if (postsCache) {
+          console.log('from redis');
+          return JSON.parse(postsCache);
+        }
+  
+        console.log('from mongodb');
+        const posts = await Post.getPostAll();
+        await redis.set('post:all', JSON.stringify(posts), 'EX', 5);
+        return posts;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     },
 
     postsById: async (_, { id }, contextValue) => {
@@ -176,7 +175,7 @@ const resolvers = {
           authorId: user.id
         })
         await redis.del('post:all');
-        
+
         return result;
       } catch (error) {
         throw error;
@@ -204,7 +203,7 @@ const resolvers = {
         const { matchedCount } = await Post.commentPost(
           postId,
           comment,
-          user.username 
+          user.username
         );
 
         if (matchedCount) {
