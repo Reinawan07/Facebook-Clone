@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import { gql, useMutation } from '@apollo/client';
+
+
+const LIKE_POST_MUTATION = gql`
+  mutation LikePost($postId: ID!) {
+    likePost(postId: $postId)
+  }
+`;
 
 const formatDate = (timestamp) => {
   const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -8,8 +16,21 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString('en-US', options);
 };
 
+
 const Card = ({ post, navigation }) => {
-  
+  const [isLiked, setIsLiked] = useState(false);
+
+  const [likePost] = useMutation(LIKE_POST_MUTATION);
+
+  const handleLikePress = async () => {
+    try {
+      await likePost({ variables: { postId: post._id } });
+      setIsLiked(true);
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
+  };
+
   const handleCommentPress = () => {
     navigation.navigate('DetailPost', {
       postsByIdId: post._id,
@@ -38,8 +59,15 @@ const Card = ({ post, navigation }) => {
           <Text style={styles.commentCount}>{post.comments.length} comments</Text>
         </View>
         <View style={styles.likeCommentButtons}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Like</Text>
+
+          <TouchableOpacity
+            style={[styles.button, { borderColor: isLiked ? '#1877f2' : 'transparent' }]}
+            onPress={handleLikePress}
+            disabled={isLiked}
+          >
+            <Text style={[styles.buttonText, { color: isLiked ? '#1877f2' : 'black' }]}>
+              {isLiked ? 'Liked' : 'Like'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={handleCommentPress}>
