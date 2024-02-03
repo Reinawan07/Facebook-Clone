@@ -78,6 +78,7 @@ function Home({ navigation }) {
         Authorization: accessToken ? `Bearer ${accessToken}` : '',
       },
     },
+    pollInterval: 5000,
   });
   console.log(data, 'dataHOME <<<<<');
 
@@ -90,7 +91,7 @@ function Home({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: '#f0f2f5', padding: 10 }}>
       <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, borderRadius: 5, marginBottom: 10, padding: 10, backgroundColor: 'white' }}
+        style={{ height: 40, borderColor: 'gray', borderWidth: 1, borderRadius: 10, marginBottom: 10, padding: 10, backgroundColor: 'white' }}
         placeholder="Search"
         // value={searchTerm}
         // onChangeText={text => setSearchTerm(text)}

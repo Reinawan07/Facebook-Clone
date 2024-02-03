@@ -2,6 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
+const formatDate = (timestamp) => {
+  const options = {  month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleDateString('en-US', options);
+};
+
 const Card = ({ post, navigation }) => {
   return (
     <View style={styles.postContainer}>
@@ -9,7 +15,7 @@ const Card = ({ post, navigation }) => {
         <Image source={{ uri: post.user.profileImage }} style={styles.profileImage} />
         <View>
           <Text style={styles.username}>{post.user.username}</Text>
-          <Text style={styles.timeAgo}>{post.createdAt}</Text>
+          <Text style={styles.timeAgo}>{formatDate(post.createdAt)}</Text>
         </View>
       </View>
       <Text style={styles.postText}>{post.content}</Text>
@@ -70,7 +76,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     width: '100%',
-    height: 200,
+    height: 250,
     borderRadius: 10,
   },
   likeCommentContainer: {
