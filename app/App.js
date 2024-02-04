@@ -11,6 +11,7 @@ import MainStack from './navigators/MainStack';
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from './config/apolloClient';
 import * as SecureStore from 'expo-secure-store';
+import AllUsers from './screen/AllUser';
 
 
 const Tab = createBottomTabNavigator();
@@ -48,6 +49,16 @@ export function TabNavigator() {
           headerShown: false,
         }}
       />
+      <Tab.Screen
+        name="AllUsers"
+        component={AllUsers}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="search" size={size} color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -56,8 +67,6 @@ export function HomeScreen() {
   const authContext = useContext(AuthContext);
 
   const handleLogout = () => {
-
-
     Alert.alert(
       'Logout',
       'Are you sure you want to logout?',
