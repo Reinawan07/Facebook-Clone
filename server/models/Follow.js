@@ -13,12 +13,12 @@ class Follow {
                 createdAt: date,
                 updatedAt: date,
             });
-             return await follows.findOne({ _id: result.insertedId });
+            return await follows.findOne({ _id: result.insertedId });
         } catch (error) {
-            throw error; 
+            throw error;
         }
     }
-    
+
     // get follow
     static async getFollow(followingId, followerId) {
         return await database.collection('follows').findOne({
