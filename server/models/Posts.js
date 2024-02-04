@@ -6,35 +6,35 @@ class Post {
     static async getPostAll() {
         const posts = database.collection('posts');
         const result = await posts.aggregate([
-          {
-            $sort: { createdAt: -1 },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              foreignField: '_id',
-              localField: 'authorId',
-              as: 'user',
-              pipeline: [
-                {
-                  $project: { password: 0 },
-                },
-              ],
+            {
+                $sort: { createdAt: -1 },
             },
-          },
-          {
-            $unwind: '$user',
-          },
+            {
+                $lookup: {
+                    from: 'users',
+                    foreignField: '_id',
+                    localField: 'authorId',
+                    as: 'user',
+                    pipeline: [
+                        {
+                            $project: { password: 0 },
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind: '$user',
+            },
         ]).toArray();
         // console.log(result);
         return result;
-      }
-      
+    }
+
 
     // getById
     static async getPostById(id) {
         const posts = database.collection('posts');
-    
+
         const result = await posts.aggregate([
             {
                 $match: { _id: new ObjectId(id) }
@@ -77,10 +77,10 @@ class Post {
                 }
             }
         ]).toArray();
-    
+
         return result[0];
     }
-    
+
 
     // addPost
     static async addPost(post) {
@@ -130,6 +130,18 @@ class Post {
             }
         );
     }
+
+    static async unlikePost(postId, username) {
+        return await database.collection('posts').updateOne(
+            { _id: new ObjectId(postId) },
+            {
+                $pull: {
+                    likes: { username }
+                },
+            }
+        );
+    }
+
 
 }
 

@@ -3,10 +3,15 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { gql, useMutation } from '@apollo/client';
 
-
 const LIKE_POST_MUTATION = gql`
   mutation LikePost($postId: ID!) {
     likePost(postId: $postId)
+  }
+`;
+
+const UNLIKE_POST_MUTATION = gql`
+  mutation UnlikePost($postId: ID!) {
+    unlikePost(postId: $postId)
   }
 `;
 
@@ -16,11 +21,11 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString('en-US', options);
 };
 
-
 const Card = ({ post, navigation }) => {
   const [isLiked, setIsLiked] = useState(false);
 
   const [likePost] = useMutation(LIKE_POST_MUTATION);
+  const [unlikePost] = useMutation(UNLIKE_POST_MUTATION);
 
   const handleLikePress = async () => {
     try {
@@ -28,6 +33,15 @@ const Card = ({ post, navigation }) => {
       setIsLiked(true);
     } catch (error) {
       console.error('Error liking post:', error);
+    }
+  };
+
+  const handleUnlikePress = async () => {
+    try {
+      await unlikePost({ variables: { postId: post._id } });
+      setIsLiked(false);
+    } catch (error) {
+      console.error('Error unliking post:', error);
     }
   };
 
@@ -59,17 +73,14 @@ const Card = ({ post, navigation }) => {
           <Text style={styles.commentCount}>{post.comments.length} comments</Text>
         </View>
         <View style={styles.likeCommentButtons}>
-
           <TouchableOpacity
-            style={[styles.button, { borderColor: isLiked ? '#1877f2' : 'transparent' }]}
-            onPress={handleLikePress}
-            disabled={isLiked}
+            style={styles.button}
+            onPress={isLiked ? handleUnlikePress : handleLikePress}
           >
-            <Text style={[styles.buttonText, { color: isLiked ? '#1877f2' : 'black' }]}>
-              {isLiked ? 'Liked' : 'Like'}
+            <Text style={[styles.buttonText, { color: isLiked ? '#1877f2' : 'blue' }]}>
+              {isLiked ? 'Unlike' : 'Like'}
             </Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.button} onPress={handleCommentPress}>
             <Text style={styles.buttonText}>Comment</Text>
           </TouchableOpacity>
@@ -148,7 +159,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   buttonText: {
-    color: '#1877f2',
+    color: 'blue',
   },
 });
 

@@ -119,6 +119,7 @@ const typeDefs = `#graphql
     addPost(post: NewPost!): Post
     commentPost(postId: ID!, comment: String!): String
     likePost(postId: ID!): String
+    unlikePost(postId: ID!): String
   }
 `;
 
@@ -130,12 +131,12 @@ const resolvers = {
       try {
         await contextValue.authentication();
         const postsCache = await redis.get('post:all');
-  
+
         if (postsCache) {
           console.log('from redis');
           return JSON.parse(postsCache);
         }
-  
+
         console.log('from mongodb');
         const posts = await Post.getPostAll();
         await redis.set('post:all', JSON.stringify(posts), 'EX', 5);
@@ -240,6 +241,30 @@ const resolvers = {
       }
     },
 
+    unlikePost: async (parent, args, contextValue) => {
+      try {
+        const user = await contextValue.authentication();
+        const { postId } = args;
+        const post = await Post.getPostById(postId);
+
+        if (!post) {
+          throw new GraphQLError('Post not found', {
+            extensions: { code: '404 Not Found' },
+          });
+        }
+
+        const { matchedCount } = await Post.unlikePost(postId, user.username);
+
+        if (matchedCount) {
+          return 'Post unliked successfully';
+        }
+
+        return 'Post not unliked';
+      } catch (error) {
+        throw error;
+      }
+    },
+    
   }
 }
 
