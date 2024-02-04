@@ -1,27 +1,48 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { useQuery, gql } from '@apollo/client';
 
-const Profile = () => {
+const USER_BY_ID_QUERY = gql`
+  query UserById($userByIdId: ID!) {
+  userById(id: $userByIdId) {
+    _id
+    name
+    username
+    email
+    profileImage
+  }
+}
+`;
 
-  const user = {
-    id: 1,
-    username: 'John Doe',
-    profileImage: 'https://cdn.icon-icons.com/icons2/832/PNG/512/fb_icon-icons.com_66689.png',
-    followersCount: 500,
-    followingsCount: 200,
-  };
+const Profile = ({ route }) => {
+  const { userByIdId } = route.params || {};
+  console.log('userByIdId:', userByIdId);
+
+  const { data, loading, error } = useQuery(USER_BY_ID_QUERY, {
+    variables: { userByIdId: userByIdId || '' },
+  });
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (error) {
+    console.error('Error fetching user data:', error);
+    return <Text>Error loading user data</Text>;
+  }
+
+  const user = data.userById;
 
   return (
     <View style={styles.container}>
       <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
       <Text style={styles.username}>{user.username}</Text>
       <View style={styles.followCounts}>
-        <TouchableOpacity style={styles.followButton}>
-          <Text style={styles.followButtonText}>{user.followersCount} Followers</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.followButton}>
-          <Text style={styles.followButtonText}>{user.followingsCount} Followings</Text>
-        </TouchableOpacity>
       </View>
+
+
+      <Text style={styles.additionalInfo}>Email: {user.email}</Text>
+      <Text style={styles.additionalInfo}>Name: {user.name}</Text>
     </View>
   );
 };

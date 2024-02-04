@@ -50,7 +50,6 @@ function Home({ navigation }) {
     },
     pollInterval: 5000,
   });
-  // console.log(data, 'dataHOME <<<<<');
 
   const posts = data?.posts || [];
 

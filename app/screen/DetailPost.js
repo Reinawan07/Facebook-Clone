@@ -48,12 +48,10 @@ const DetailPost = ({ route }) => {
     const scrollViewRef = useRef();
 
     const { postsByIdId } = route.params || {};
-    // console.log('Post ID:', postsByIdId);
-
+    
     const { loading, error, data } = useQuery(POSTS_BY_ID_QUERY, {
         variables: { postsByIdId: postsByIdId },
     });
-    // console.log('Post:', data?.postsById);
     const post = data?.postsById || {};
 
     useEffect(() => {

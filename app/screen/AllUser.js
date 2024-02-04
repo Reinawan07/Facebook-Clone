@@ -52,7 +52,7 @@ const AllUsers = () => {
       <FlatList
         data={users}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <UserCard user={item} />} // assuming you have a Card component for individual users
+        renderItem={({ item }) => <UserCard user={item} />}
       />
     </View>
   );
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   clearButton: {
     marginLeft: 8,
     padding: 8,
-    backgroundColor: '#ccc',
+    backgroundColor: 'red',
     borderRadius: 5,
   },
   clearButtonText: {

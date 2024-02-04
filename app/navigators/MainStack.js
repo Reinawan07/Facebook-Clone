@@ -6,6 +6,7 @@ import Register from '../screen/Register';
 import DetailPost from '../screen/DetailPost';
 import { AuthContext } from '../context/AuthContext';
 import { HomeScreen, TabNavigator } from '../App';
+import Profile from '../screen/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ console.log(authContext, 'authContext');
                             }}
                         />
                         <Stack.Screen name="DetailPost" component={DetailPost} />
+                        <Stack.Screen name="Profile" component={Profile} />
                     </>
                 )}
             </Stack.Navigator>

@@ -30,7 +30,6 @@ function Login({ navigation }) {
         },
       });
     
-    // console.log(loading, error, data, 'dataLogin <<<<<');
 
     return (
         <View style={styles.container}>
@@ -57,7 +56,6 @@ function Login({ navigation }) {
                 style={styles.button}
                 onPress={() => {
                     login({ variables: { username, password } });
-                    // authContext.setIsSignedIn(true);
                 }}>
 
                 <Text style={styles.buttonText}>Login</Text>

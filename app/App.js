@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screen/Home';
 import CreatePost from './screen/CreatePost';
-import Profile from './screen/Profile';
 import { AntDesign, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { Alert, Button } from 'react-native';
 import AuthProvider, { AuthContext } from './context/AuthContext';
@@ -35,16 +33,6 @@ export function TabNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="pencil" size={size} color={color} />
-          ),
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
           ),
           headerShown: false,
         }}
