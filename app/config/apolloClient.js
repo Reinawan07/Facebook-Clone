@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 
 
 const httpLink = createHttpLink({
-    uri: 'https://1c92-101-255-140-70.ngrok-free.app',
+    uri: 'https://ch1.reinawan.fun/',
 });
 
 const authLink = setContext(async (_, { headers }) => {
